@@ -1,0 +1,24 @@
+{
+  "name": "employee-tracker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arpita-sahakar/employee-tracker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/arpita-sahakar/employee-tracker/issues"
+  },
+  "homepage": "https://github.com/arpita-sahakar/employee-tracker#readme",
+  "dependencies": {
+    "inquirer": "^0.2.0",
+    "mysql": "^2.18.1"
+  }
+}
