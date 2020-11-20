@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/arpita-sahakar/employee-tracker#readme",
   "dependencies": {
-    "inquirer": "^0.2.0",
+    "inquirer": "^7.3.3",
     "mysql": "^2.18.1"
   }
 }
