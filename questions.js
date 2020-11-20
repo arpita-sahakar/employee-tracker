@@ -13,7 +13,7 @@ const mainMenuQues = [
       "View All Roles",
       "Update Employee Department",
     ],
-    name: "userResponse",
+    name: "userRes",
   },
 ];
 module.exports = mainMenuQues;
