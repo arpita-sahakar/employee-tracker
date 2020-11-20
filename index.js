@@ -8,7 +8,7 @@ const connection = mysql.createConnection({
   port: 3306,
   user: "root",
   password: "root",
-  database: "walmart",
+  database: "organization_db",
 });
 
 connection.connect(function (err) {
@@ -21,7 +21,7 @@ function init() {
   //ask the main menu questions to user.
   //for each answer type create functions
   inquirer.prompt(mainMenuQues).then((res) => {
-    console.log(res);
+    // console.log(res);
     if (res.userRes === "View All Employees") {
       viewAllEmployees();
     } else if (res.userRes === "View All Employees By Department") {
@@ -38,8 +38,6 @@ function init() {
       updateEmployeeManager();
     } else if (res.userRes === "View All Roles") {
       viewAllRoles();
-    } else if (res.userRes === "Update Employee Department") {
-      updateEmployeeDept();
     } else {
       connection.end();
     }
@@ -49,6 +47,14 @@ init();
 
 function viewAllEmployees() {
   // call database to get the values
+  var queryString =
+    "select employee.id,employee.first_name, employee.last_name, role.role_title, department.dept_name, role.salary, MgrDetails.first_name manager_name from employee inner join role on employee.role_id = role.id join department on department.dept_id = role.dept_id left join employee MgrDetails on employee.manager_id = MgrDetails.id";
+  connection.query(queryString, function (err, res) {
+    if (err) throw err;
+    console.table(res);
+    init();
+  });
+
   // display the result in table format
   // go back to main menu
 }
@@ -92,10 +98,4 @@ function viewAllRoles() {
   // call database to get the values
   // display the result in table format
   // go back to main menu
-}
-
-function updateEmployeeDept() {
-  //ask which employee's manager you want to changes
-  // display list of manager available
-  // update the change to database
 }

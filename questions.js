@@ -12,6 +12,7 @@ const mainMenuQues = [
       "Update Employee Manager",
       "View All Roles",
       "Update Employee Department",
+      "Exit"
     ],
     name: "userRes",
   },
