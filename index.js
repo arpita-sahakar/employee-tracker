@@ -14,7 +14,6 @@ const connection = mysql.createConnection({
 connection.connect(function (err) {
   if (err) throw err;
   console.log("connected as id " + connection.threadId + "\n");
-  init();
 });
 
 function init() {
@@ -51,18 +50,38 @@ function viewAllEmployees() {
     "select employee.id,employee.first_name, employee.last_name, role.role_title, department.dept_name, role.salary, MgrDetails.first_name manager_name from employee inner join role on employee.role_id = role.id join department on department.dept_id = role.dept_id left join employee MgrDetails on employee.manager_id = MgrDetails.id";
   connection.query(queryString, function (err, res) {
     if (err) throw err;
+    // display the result in table format
     console.table(res);
+    // go back to main menu
     init();
   });
-
-  // display the result in table format
-  // go back to main menu
 }
 
 function viewAllEmpByDept() {
-  // call database to get the values
-  // display the result in table format
-  // go back to main menu
+  // get list of all departments and show choices to user using inquirer
+  connection.query("select dept_name from department", function (err, res) {
+    if (err) throw err;
+    const deptArray = [];
+    for (i = 0; i < res.length; i++) {
+      deptArray.push(res[i].dept_name);
+    }
+    //once user selects a dept, query the database and find all employees in that dept
+    inquirer
+      .prompt({
+        type: "list",
+        message: "choose department",
+        choices: deptArray,
+        name: "deptName",
+      })
+      .then((response) => {
+        let queryString = `select employee.first_name, employee.last_name,role.role_title,role.salary from employee join role on employee.role_id = role.id join department on department.dept_id = role.dept_id where department.dept_name = '${response.deptName}'`;
+        connection.query(queryString, function (err, res) {
+          if (err) throw err;
+          console.table(res);
+          init();
+        });
+      });
+  });
 }
 
 function viewAllEmpByManager() {
