@@ -22,35 +22,21 @@ async function init() {
   if (res.userRes === "View All Employees") {
     await viewAllEmployees();
     await init();
-
   } else if (res.userRes === "View All Employees By Department") {
     await viewAllEmpByDept();
     await init();
-
-  } else if (res.userRes === "View All Employees By Manager") {
-    await viewAllEmpByManager();
-    await init();
-
   } else if (res.userRes === "Add Employee") {
     await addEmployee();
     await init();
-
   } else if (res.userRes === "Remove Employee") {
     await removeEmployee();
     await init();
-
   } else if (res.userRes === "Update Employee Role") {
     await updateEmpRole();
     await init();
-
-  } else if (res.userRes === "Update Employee Manager") {
-    await updateEmployeeManager();
-    await init();
-
   } else if (res.userRes === "View All Roles") {
     await viewAllRoles();
     await init();
-
   } else {
     connection.end();
   }
@@ -97,19 +83,13 @@ async function viewAllEmpByDept() {
   });
 
   let queryString = `select employee.first_name, employee.last_name,
-  role.role_title,role.salary from employee 
-  join role on employee.role_id = role.id 
-  join department on department.dept_id = role.dept_id 
-  where department.dept_name = '${response.deptName}'`;
+    role.role_title,role.salary from employee 
+    join role on employee.role_id = role.id 
+    join department on department.dept_id = role.dept_id 
+    where department.dept_name = '${response.deptName}'`;
 
   let employeeDetailsByDept = await executeQuery(queryString);
   console.table(employeeDetailsByDept);
-}
-
-function viewAllEmpByManager() {
-  // call database to get the values
-  // display the result in table format
-  // go back to main menu
 }
 
 async function addEmployee() {
@@ -134,8 +114,8 @@ async function addEmployee() {
   // fetch all roles from database
 
   let queryStr = `select role.role_title, role.id from role 
- join department on department.dept_id = role.dept_id 
- where dept_name = '${deptResponse.deptName}' `;
+    join department on department.dept_id = role.dept_id 
+    where dept_name = '${deptResponse.deptName}' `;
 
   let availableRoles = await executeQuery(queryStr);
   //  console.log(availableRoles);
@@ -168,60 +148,101 @@ async function addEmployee() {
   let roleId = roleNameResponse.roleName.split("-")[1];
 
   let query = `insert into employee(first_name, last_name, role_id) 
-values('${roleNameResponse.firstName}','${roleNameResponse.lastName}','${roleId}')`;
+    values('${roleNameResponse.firstName}','${roleNameResponse.lastName}','${roleId}')`;
 
   await executeQuery(query);
-  
 }
 
-function removeEmployee() {
+async function removeEmployee() {
   // get the list of all employees from database
+  let query = `select concat(id, '-', first_name,' ',last_name) employee_name from employee`;
+  let result = await executeQuery(query);
+  // console.log(result);
+
+  // convert object array into array of strings
+  const employeeArray = [];
+  for (i = 0; i < result.length; i++) {
+    employeeArray.push(result[i].employee_name);
+  }
   //user selects the employee to be removed
+  const response = await inquirer.prompt([
+    {
+      type: "list",
+      choices: employeeArray,
+      message: "which employee you would like to remove?",
+      name: "empToBeRemoved",
+    },
+  ]);
+  // console.log(response);
+  // let employeeId = response.empToBeRemoved.split("-")[0];
+
+  let deleteQuery = `delete from employee where id = ${
+    response.empToBeRemoved.split("-")[0]
+  }`;
   // execute query to delete the selected query
+  await executeQuery(deleteQuery);
 }
 
-function updateEmpRole() {
+async function updateEmpRole() {
   //display the employee list and ask which employee role you want to change
+  let query = `select concat(id, '-', first_name,' ',last_name) employee_name from employee`;
+  let result = await executeQuery(query);
+
+  // convert object array into array of strings
+  const employeeArray = [];
+  for (i = 0; i < result.length; i++) {
+    employeeArray.push(result[i].employee_name);
+  }
+
+  //user selects the employee to be updated
+  const response = await inquirer.prompt([
+    {
+      type: "list",
+      choices: employeeArray,
+      message: "which employee role you would like to update?",
+      name: "updateEmpRole",
+    },
+  ]);
+  // since id is unique so store the id for future use
+  let employeeId = response.updateEmpRole.split("-")[0];
+
   // show the list of roles and which role you want to change
-  // update the database
-}
 
-function updateEmployeeManager() {
-  //ask which employee's manager you want to changes
-  // display list of manager available
-  // update the change to database
-}
-
-function viewAllRoles() {
   // call database to get the values
-  // display the result in table format
-  // go back to main menu
+  let roleQuery = `select role_title, role.id from role `;
+
+  //execute the query
+  let roleResult = await executeQuery(roleQuery);
+  // console.log(roleResult);
+  // convert object array into array of strings
+  const roleArray = [];
+  for (i = 0; i < roleResult.length; i++) {
+    roleArray.push(roleResult[i].role_title + "-" + roleResult[i].id);
+  }
+
+  // ask user which new role to be assigned to the selected employee.
+  const roleResponse = await inquirer.prompt([
+    {
+      type: "list",
+      choices: roleArray,
+      message: "select new role?",
+      name: "newRole",
+    },
+  ]);
+  console.log(roleResponse);
+
+  let roleId = roleResponse.newRole.split("-")[1];
+
+  // update the database
+  let updateQuery = `update employee set role_id = ${roleId} where id = ${employeeId}`;
+  await executeQuery(updateQuery);
 }
 
-// function init() {
-//   //ask the main menu questions to user.
-//   //for each answer type create functions
-//   inquirer.prompt(mainMenuQues).then((res) => {
-//     // console.log(res);
-//     if (res.userRes === "View All Employees") {
-//       viewAllEmployees();
-//     } else if (res.userRes === "View All Employees By Department") {
-//       viewAllEmpByDept();
-//     } else if (res.userRes === "View All Employees By Manager") {
-//       viewAllEmpByManager();
-//     } else if (res.userRes === "Add Employee") {
-//       addEmployee();
-//     } else if (res.userRes === "Remove Employee") {
-//       removeEmployee();
-//     } else if (res.userRes === "Update Employee Role") {
-//       updateEmpRole();
-//     } else if (res.userRes === "Update Employee Manager") {
-//       updateEmployeeManager();
-//     } else if (res.userRes === "View All Roles") {
-//       viewAllRoles();
-//     } else {
-//       connection.end();
-//     }
-//   });
-// }
-// init();
+async function viewAllRoles() {
+  // call database to get the values
+  let query = `select role_title, salary, dept_name from role 
+  join department on role.dept_id = department.dept_id`;
+  let result = await executeQuery(query);
+  // display the result in table format
+  console.table(result);
+}

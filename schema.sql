@@ -10,14 +10,14 @@ CREATE TABLE role (
   id INT NOT NULL AUTO_INCREMENT,
   role_title VARCHAR(45) not NULL,
   salary DECIMAL(10, 2) not NULL,
-  dept_id varchar(30) not null,
+  dept_id int not null,
   PRIMARY KEY (id)
 );
 CREATE TABLE employee (
   id INT NOT NULL AUTO_INCREMENT,
   first_name VARCHAR(45) not NULL,
   last_name VARCHAR(45) not NULL,
-  role_id varchar(30) not null,
+  role_id int not null,
   manager_id varchar(30),
   PRIMARY KEY (id)
 );
