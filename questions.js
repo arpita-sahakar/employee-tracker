@@ -5,13 +5,10 @@ const mainMenuQues = [
     choices: [
       "View All Employees",
       "View All Employees By Department",
-      "View All Employees By Manager",
       "Add Employee",
       "Remove Employee",
       "Update Employee Role",
-      "Update Employee Manager",
       "View All Roles",
-      "Update Employee Department",
       "Exit"
     ],
     name: "userRes",
